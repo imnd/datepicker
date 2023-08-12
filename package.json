@@ -1,0 +1,20 @@
+{
+  "name": "imnd-datepicker",
+  "version": "1.0.0",
+  "description": "datepicker",
+  "main": "datepicker.js",
+  "scripts": {
+    "build": "webpack --mode=production"
+  },
+  "author": "imnd",
+  "devDependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/preset-env": "^7.20.2",
+    "babel-loader": "^9.1.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "imnd-dom": "^1.0.0"
+  },
+  "license": "ISC"
+}

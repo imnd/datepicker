@@ -7,7 +7,7 @@
  * @copyright (c) 2020 IMND
  */
 
-import dom from 'dom';
+import dom from 'imnd-dom';
 
 const styles = `
     .hidden {display: none;}
@@ -79,7 +79,7 @@ const datepicker = {
 
         dom.ready(() => {
             const datepickerInputs = dom.findAllByClass(options["class"]);
-            datepickerInputs.map(datepickerInput => {
+            [...datepickerInputs].map(datepickerInput => {
                 const name = dom.attr(datepickerInput, 'name');
 
                 let

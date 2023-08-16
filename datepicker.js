@@ -57,252 +57,250 @@ const template = `
 </div>
 `;
 
-const datepicker = {
-    /**
-     * @param data
-     * @return {void}
-     */
-    build: data => {
-        let options = {
-            "class" : "datepicker",
-            placeholder : "ДД.ММ.ГГГГ",
-            daysOfWeek : ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
-            monthNames : ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
-        };
+/**
+ * @param data
+ * @return {void}
+ */
+const datepicker = data => {
+  let options = {
+    "class": "datepicker",
+    placeholder: "ДД.ММ.ГГГГ",
+    daysOfWeek: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
+    monthNames: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+  };
 
-        data = data || {};
-        for (let key in data) {
-            if (data.hasOwnProperty(key)) {
-                options[key] = data[key];
-            }
+  data = data || {};
+  for (let key in data) {
+    if (data.hasOwnProperty(key)) {
+      options[key] = data[key];
+    }
+  }
+
+  dom.ready(() => {
+    const datepickerInputs = dom.findAllByClass(options["class"]);
+    [...datepickerInputs].map(datepickerInput => {
+      const name = dom.attr(datepickerInput, 'name');
+
+      let
+        isHidden = true,
+        time = (new Date()).getTime(),
+        daysOfWeek = "",
+        value,
+        curMonthName,
+        curYear,
+        placeholder,
+        datepickerDays,
+        curMonth,
+        selectedYear,
+        selectedMonth,
+        selectedDate,
+        curMonthDays,
+        prevMonthDays,
+        nextMonthDays,
+        hide
+      ;
+      /**
+       * Считает количество дней в месяце _month года year
+       * @param _month
+       * @param _year
+       */
+      const getDaysInMonth = (_month, _year) => 32 - new Date(_year, _month, 32).getDate();
+
+      /**
+       * Заполняет массив рядом чисел от start до end
+       * @param start
+       * @param end
+       */
+      const range = (start, end) => [...Array(end - start + 1)].map((_, key) => key + start);
+
+      /**
+       * Переводит день недели из американского в русский
+       * @param day
+       */
+      const ruDaysOfWeek = day => [6, 0, 1, 2, 3, 4, 5][day];
+
+      const refreshTemplate = datepickerWrapper => {
+        if (datepickerWrapper === undefined) {
+          datepickerWrapper = dom.findById("datepicker-wrapper-" + time);
+        }
+        dom.replace(datepickerWrapper, dom.renderTemplate(template, {
+          "id": time,
+          "value": value,
+          "name": name,
+          "curMonthName": curMonthName,
+          "curYear": curYear,
+          "placeholder": placeholder,
+          "daysOfWeek": daysOfWeek,
+          "datepickerDays": datepickerDays,
+        }));
+
+        const datepickerInput = dom.findById("datepicker-input-" + time);
+        const datepickerContainer = dom.findById("datepicker-" + time);
+
+        if (isHidden === false) {
+          dom.removeClass(datepickerContainer, "hidden");
         }
 
-        dom.ready(() => {
-            const datepickerInputs = dom.findAllByClass(options["class"]);
-            [...datepickerInputs].map(datepickerInput => {
-                const name = dom.attr(datepickerInput, 'name');
-
-                let
-                    isHidden = true,
-                    time = (new Date()).getTime(),
-                    daysOfWeek = "",
-                    value,
-                    curMonthName,
-                    curYear,
-                    placeholder,
-                    datepickerDays,
-                    curMonth,
-                    selectedYear,
-                    selectedMonth,
-                    selectedDate,
-                    curMonthDays,
-                    prevMonthDays,
-                    nextMonthDays,
-                    hide
-                ;
-                /**
-                 * Считает количество дней в месяце _month года year
-                 * @param _month
-                 * @param _year
-                 */
-                const getDaysInMonth = (_month, _year) => 32 - new Date(_year, _month, 32).getDate();
-
-                /**
-                 * Заполняет массив рядом чисел от start до end
-                 * @param start
-                 * @param end
-                 */
-                const range = (start, end) => [...Array(end - start + 1)].map((_, key) => key + start);
-
-                /**
-                 * Переводит день недели из американского в русский
-                 * @param day
-                 */
-                const ruDaysOfWeek = day => [6, 0, 1, 2, 3, 4, 5][day];
-
-                const refreshTemplate = datepickerWrapper => {
-                    if (datepickerWrapper===undefined) {
-                        datepickerWrapper = dom.findById("datepicker-wrapper-" + time);
-                    }
-                    dom.replace(datepickerWrapper, dom.renderTemplate(template, {
-                        "id" : time,
-                        "value" : value,
-                        "name" : name,
-                        "curMonthName" : curMonthName,
-                        "curYear" : curYear,
-                        "placeholder" : placeholder,
-                        "daysOfWeek" : daysOfWeek,
-                        "datepickerDays" : datepickerDays,
-                    }));
-
-                    const datepickerInput = dom.findById("datepicker-input-" + time);
-                    const datepickerContainer = dom.findById("datepicker-" + time);
-
-                    if (isHidden === false) {
-                        dom.removeClass(datepickerContainer, "hidden");
-                    }
-
-                    // навешиваем обработчики события
-                    // показать или спрятать окно при клике на инпут
-                    dom.click(datepickerInput, e => {
-                        showDatepicker(datepickerContainer);
-                        e.stopPropagation();
-                    });
-                    dom.click(datepickerContainer, e => {
-                        hide = false;
-                        e.stopPropagation();
-                    });
-                    dom.click(window, e => {
-                        if (hide) {
-                            hideDatepicker(datepickerContainer);
-                        }
-                        hide = true;
-                    });
-
-                    // навигация
-                    dom.click(dom.findById("on-prev-month-" + time), () => {
-                        curMonth--;
-                        if (curMonth === -1) {
-                            curMonth = 11;
-                            curYear--;
-                        }
-                        buildDatepicker();
-                    });
-                    dom.click(dom.findById("on-next-month-" + time), () => {
-                        curMonth++;
-                        if (curMonth === 12) {
-                            curMonth = 0;
-                            curYear++;
-                        }
-                        buildDatepicker();
-                    });
-                    dom.click(dom.findById("on-prev-year-" + time), () => {
-                        curYear--;
-                        buildDatepicker();
-                    });
-                    dom.click(dom.findById("on-next-year-" + time), () => {
-                        curYear++;
-                        buildDatepicker();
-                    });
-
-                    // дни календаря
-                    setDateHandlers(prevMonthDays, curMonth - 1);
-                    setDateHandlers(curMonthDays, curMonth);
-                    setDateHandlers(nextMonthDays, curMonth + 1);
-                };
-
-                const setDateHandlers = (days, month) => {
-                    for (let i in days) {
-                        let date = days[i];
-                        // Заполняем input
-                        dom.click(dom.findById("datepicker-date-" + time + date + month), () => {
-                            isHidden = true;
-
-                            selectedDate = date;
-                            selectedMonth = month;
-                            if (curYear !== undefined) {
-                                selectedYear = curYear;
-                            }
-                            if (selectedMonth === -1) {
-                                selectedMonth = 11;
-                                selectedYear--;
-                            }
-                            if (selectedMonth === 12) {
-                                selectedMonth = 0;
-                                selectedYear++;
-                            }
-                            curMonth = selectedMonth;
-                            formatInputDate();
-                            buildDatepicker();
-                        });
-                    }
-                };
-
-                /**
-                 * Высчитываем дни календаря
-                 */
-                const buildDatepicker = datepicker => {
-                    curMonthName = options.monthNames[curMonth];
-                    // день недели первого дня месяца
-                    let firstDay = (new Date(curYear, curMonth)).getDay();
-                    firstDay = ruDaysOfWeek(firstDay);
-                    // высчитываем дни текущего месяца
-                    const daysInMonth = getDaysInMonth(curMonth, curYear);
-                    curMonthDays = range(1, daysInMonth);
-                    // высчитываем дни предыдущего месяца
-                    const dateTime = new Date(curYear, curMonth);
-                    dateTime.setDate(0);
-                    const prevLastDate = dateTime.getDate();
-                    const prevFirstDate = prevLastDate - firstDay + 1;
-                    prevMonthDays = range(prevFirstDate, prevLastDate);
-                    // высчитываем дни следующего месяца
-                    dateTime.setDate(daysInMonth + 1);
-                    const nextLastDate = 42 - daysInMonth - (prevLastDate - prevFirstDate) - 1;
-                    nextMonthDays = range(1, nextLastDate);
-
-                    datepickerDays = "";
-                    setDatepickerDays(prevMonthDays, curMonth - 1, 'prev-month');
-                    setDatepickerDays(curMonthDays, curMonth, 'curr-month');
-                    setDatepickerDays(nextMonthDays, curMonth + 1, 'next-month');
-
-                    refreshTemplate(datepicker);
-                };
-
-                const setDatepickerDays = (monthDays, month, spanClass) => {
-                    for (let i in monthDays) {
-                        let _spanClass = spanClass;
-                        let date = monthDays[i];
-                        // Является ли день календаря сегодняшним или выбранным
-                        if (date === selectedDate && month === selectedMonth && curYear === selectedYear) {
-                            _spanClass += ' is-active';
-                        }
-                        datepickerDays += '<li><span id="datepicker-date-' + time + date + month + '" class="' + _spanClass + '">' + date + '</span></li>';
-                    }
-                };
-
-                const showDatepicker = datepicker => {
-                    isHidden = false;
-                    dom.removeClass(datepicker, "hidden");
-                };
-
-                const hideDatepicker = datepicker => {
-                    isHidden = true;
-                    dom.addClass(datepicker, "hidden");
-                };
-
-                const formatInputDate = () => {
-                    const dateFormatted = selectedDate.toString().padStart(2, '0');
-                    const monthFormatted = (selectedMonth + 1).toString().padStart(2, '0');
-
-                    value = dateFormatted + '.' + monthFormatted + '.' + selectedYear;
-                };
-
-                placeholder = options.placeholder;
-                options.daysOfWeek.map(day => {
-                    daysOfWeek += "<li>" + day + "</li>"
-                });
-
-                let date = dom.val(datepickerInput);
-                if (date !== '' && date !== null && date !== undefined) {
-                    [selectedYear, selectedMonth, selectedDate] = date.split('-').map(val => parseInt(val));
-                    selectedMonth--;
-                } else {
-                    const curDateTime = new Date();
-                    selectedDate = curDateTime.getDate();
-                    selectedMonth = curDateTime.getMonth();
-                    selectedYear = curDateTime.getFullYear();
-                }
-                curMonth = selectedMonth;
-                curYear = selectedYear;
-                formatInputDate();
-                buildDatepicker(datepickerInput);
-            });
-            // применяем стили
-            let styleTag = document.createElement("style");
-            styleTag.innerHTML = styles;
-            document.getElementsByTagName("head")[0].appendChild(styleTag);
+        // навешиваем обработчики события
+        // показать или спрятать окно при клике на инпут
+        dom.click(datepickerInput, e => {
+          showDatepicker(datepickerContainer);
+          e.stopPropagation();
         });
-    },
+        dom.click(datepickerContainer, e => {
+          hide = false;
+          e.stopPropagation();
+        });
+        dom.click(window, e => {
+          if (hide) {
+            hideDatepicker(datepickerContainer);
+          }
+          hide = true;
+        });
+
+        // навигация
+        dom.click(dom.findById("on-prev-month-" + time), () => {
+          curMonth--;
+          if (curMonth === -1) {
+            curMonth = 11;
+            curYear--;
+          }
+          buildDatepicker();
+        });
+        dom.click(dom.findById("on-next-month-" + time), () => {
+          curMonth++;
+          if (curMonth === 12) {
+            curMonth = 0;
+            curYear++;
+          }
+          buildDatepicker();
+        });
+        dom.click(dom.findById("on-prev-year-" + time), () => {
+          curYear--;
+          buildDatepicker();
+        });
+        dom.click(dom.findById("on-next-year-" + time), () => {
+          curYear++;
+          buildDatepicker();
+        });
+
+        // дни календаря
+        setDateHandlers(prevMonthDays, curMonth - 1);
+        setDateHandlers(curMonthDays, curMonth);
+        setDateHandlers(nextMonthDays, curMonth + 1);
+      };
+
+      const setDateHandlers = (days, month) => {
+        for (let i in days) {
+          let date = days[i];
+          // Заполняем input
+          dom.click(dom.findById("datepicker-date-" + time + date + month), () => {
+            isHidden = true;
+
+            selectedDate = date;
+            selectedMonth = month;
+            if (curYear !== undefined) {
+              selectedYear = curYear;
+            }
+            if (selectedMonth === -1) {
+              selectedMonth = 11;
+              selectedYear--;
+            }
+            if (selectedMonth === 12) {
+              selectedMonth = 0;
+              selectedYear++;
+            }
+            curMonth = selectedMonth;
+            formatInputDate();
+            buildDatepicker();
+          });
+        }
+      };
+
+      /**
+       * Высчитываем дни календаря
+       */
+      const buildDatepicker = datepicker => {
+        curMonthName = options.monthNames[curMonth];
+        // день недели первого дня месяца
+        let firstDay = (new Date(curYear, curMonth)).getDay();
+        firstDay = ruDaysOfWeek(firstDay);
+        // высчитываем дни текущего месяца
+        const daysInMonth = getDaysInMonth(curMonth, curYear);
+        curMonthDays = range(1, daysInMonth);
+        // высчитываем дни предыдущего месяца
+        const dateTime = new Date(curYear, curMonth);
+        dateTime.setDate(0);
+        const prevLastDate = dateTime.getDate();
+        const prevFirstDate = prevLastDate - firstDay + 1;
+        prevMonthDays = range(prevFirstDate, prevLastDate);
+        // высчитываем дни следующего месяца
+        dateTime.setDate(daysInMonth + 1);
+        const nextLastDate = 42 - daysInMonth - (prevLastDate - prevFirstDate) - 1;
+        nextMonthDays = range(1, nextLastDate);
+
+        datepickerDays = "";
+        setDatepickerDays(prevMonthDays, curMonth - 1, 'prev-month');
+        setDatepickerDays(curMonthDays, curMonth, 'curr-month');
+        setDatepickerDays(nextMonthDays, curMonth + 1, 'next-month');
+
+        refreshTemplate(datepicker);
+      };
+
+      const setDatepickerDays = (monthDays, month, spanClass) => {
+        for (let i in monthDays) {
+          let _spanClass = spanClass;
+          let date = monthDays[i];
+          // Является ли день календаря сегодняшним или выбранным
+          if (date === selectedDate && month === selectedMonth && curYear === selectedYear) {
+            _spanClass += ' is-active';
+          }
+          datepickerDays += '<li><span id="datepicker-date-' + time + date + month + '" class="' + _spanClass + '">' + date + '</span></li>';
+        }
+      };
+
+      const showDatepicker = datepicker => {
+        isHidden = false;
+        dom.removeClass(datepicker, "hidden");
+      };
+
+      const hideDatepicker = datepicker => {
+        isHidden = true;
+        dom.addClass(datepicker, "hidden");
+      };
+
+      const formatInputDate = () => {
+        const dateFormatted = selectedDate.toString().padStart(2, '0');
+        const monthFormatted = (selectedMonth + 1).toString().padStart(2, '0');
+
+        value = dateFormatted + '.' + monthFormatted + '.' + selectedYear;
+      };
+
+      placeholder = options.placeholder;
+      options.daysOfWeek.map(day => {
+        daysOfWeek += "<li>" + day + "</li>"
+      });
+
+      let date = dom.val(datepickerInput);
+      if (date !== '' && date !== null && date !== undefined) {
+        [selectedYear, selectedMonth, selectedDate] = date.split('-').map(val => parseInt(val));
+        selectedMonth--;
+      } else {
+        const curDateTime = new Date();
+        selectedDate = curDateTime.getDate();
+        selectedMonth = curDateTime.getMonth();
+        selectedYear = curDateTime.getFullYear();
+      }
+      curMonth = selectedMonth;
+      curYear = selectedYear;
+      formatInputDate();
+      buildDatepicker(datepickerInput);
+    });
+    // применяем стили
+    let styleTag = document.createElement("style");
+    styleTag.innerHTML = styles;
+    document.getElementsByTagName("head")[0].appendChild(styleTag);
+  });
 };
 
 export default datepicker;

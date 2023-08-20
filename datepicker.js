@@ -3,67 +3,12 @@
  *
  * @author Andrey Serdyuk imndsu@gmail.com
  * @copyright (c) 2023 IMND
- *
- * Usage:
- * import datepicker from 'imnd-datepicker';
- *
- * datepicker({
- *   class: 'datepicker',
- *   locale : 'en',
- * });
  */
 
 import dom from 'imnd-dom';
 import locale from './locale.json';
-
-// TODO: вынести в файл
-const styles = `
-    .hidden {display: none;}
-    .form__field {position: relative;display: flex;flex-wrap: wrap;align-items: stretch;width: auto;}
-    .datepicker{position:absolute;z-index:50;margin-top:5px;padding:20px 16px; width:220px;top:100%;left:0;background-color:#fff;border:1px solid #D0D0D0;border-radius:5px;}
-    .datepicker__nav{padding:0 3px;margin-bottom:16px}
-    .datepicker__nav,.datepicker__nav-content{display:flex;align-items:center;justify-content:space-between}
-    .datepicker__nav-content{flex-grow:1;padding:0 15px}
-    .datepicker__nav-action{width:30px;cursor:pointer;text-align:center;font-size: 24px;}
-    .datepicker__month{flex-grow:1;color:#000;font-size:1.3em;text-align:center}
-    .datepicker__year{display:flex;align-items:center;margin-left:6px;font-size:1.5em}
-    .datepicker__year-arrows{margin-left:5px}
-    .datepicker__week{display:flex;padding:0;margin:0 0 13px;list-style:none}
-    .datepicker__week li{width:14.28571%;color:#000;font-size:1em;line-height:1;text-align:center}
-    .datepicker__days{display:flex;flex-wrap:wrap;padding:0;margin:0;list-style:none}
-    .datepicker__days li{margin-bottom:2px;width:14.28571%}
-    .datepicker__days li span{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid transparent;border-radius:50%;color:#000;font-size:1rem;line-height:1;cursor:pointer;transition:all .3s}.datepicker__days li span:hover{border-color:#D0D0D0}.datepicker__days li span.is-active{background-color:#777;border-color:#777;color:#fff}
-    .datepicker__days li span.prev-month, .datepicker__days li span.next-month {color:#7d7d7d}
-    .datepicker__year-arrow{position: absolute;display:flex;width:10px;height:10px;cursor:pointer;font-weight: bold;}
-    .datepicker__year-arrow.up {top:16px; font-size:0.8em;}
-    .datepicker__year-arrow.down {top:24px; font-size:0.7em; margin-left: 1px;}
-    .datepicker .control {margin-right: 0px;}
-`;
-
-const template = `
-<div class="form__field datepicker-wrapper" id="datepicker-wrapper-{{ id }}">
-    <div class="input-field input-field--append">
-        <input class="datepicker-input" id="datepicker-input-{{ id }}" value="{{ value }}" placeholder="{{ placeholder }}" name="' + name + '"/>
-        <div class="hidden datepicker" id="datepicker-{{ id }}">
-            <div class="datepicker__nav">
-                <div class="datepicker__nav-action on-prev-month" id="on-prev-month-{{ id }}"><</div>
-                <div class="datepicker__nav-content">
-                    <div class="datepicker__month">{{ curMonthName }}</div>
-                    <div class="datepicker__year">{{ curYear }}
-                        <div class="datepicker__year-arrows">
-                            <div class="datepicker__year-arrow up on-next-year" id="on-next-year-{{ id }}">^</div>
-                            <div class="datepicker__year-arrow down on-prev-year" id="on-prev-year-{{ id }}">v</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="datepicker__nav-action control on-next-month" id="on-next-month-{{ id }}">></div>
-            </div>
-            <ul class="datepicker__week">{{ daysOfWeek }}</ul>
-            <ul class="datepicker__days">{{ datepickerDays }}</ul>
-        </div>
-    </div>
-</div>
-`;
+import styles from "./styles.css";
+import template from "./template";
 
 /**
  * @param data

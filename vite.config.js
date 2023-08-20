@@ -6,7 +6,8 @@ const config = defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'datepicker.js'),
       name: 'datepicker',
-      fileName: 'datepicker'
+      fileName: 'datepicker',
+      formats: ['es'],
     },
   }
 });

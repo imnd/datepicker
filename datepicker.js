@@ -7,8 +7,8 @@
 
 import dom from 'imnd-dom';
 import locale from './locale.json';
-import styles from "./styles.css";
-import template from "./template";
+import styles from './styles.css';
+import template from './template';
 
 /**
  * @param data

@@ -13,10 +13,10 @@ const o = function(w) {
     return i = d[d.length - 1], n;
   }, n.findAll = (e, t) => (t === void 0 && (t = document), c = t.querySelectorAll(e), n), n.findById = (e, t) => (t === void 0 && (t = document), i = t.getElementById ? t.getElementById(e) : t.all ? t.all[e][1] : t.layers[e], n), n.findByName = (e, t) => (t === void 0 && (t = document), i = t.getElementsByName ? t.getElementsByName(e)[0] : t.all ? t.all[e] : t.layers[e], n), n.findObj = (e, t) => (i = typeof e == "object" ? e : n.findById(e, t) || n.findByName(e, t) || n.findByClass(e, t), n), n.findAllByTag = (e, t) => (t === void 0 && (t = document), t.getElementsByTagName && (c = t.getElementsByTagName(e)), n), n.findByTag = (e, t) => (i = n.findAllByTag(e, t)[0], n), n.findAllByName = (e, t) => (t === void 0 && (t = document), i = t.getElementsByName ? t.getElementsByName(e) : t.all ? t.all[e] : t.layers[e], n), n.findAllByClass = (e, t) => (t === void 0 && (t = document), t.getElementsByClassName(e) && (c = t.getElementsByClassName(e)), n), n.findByClass = (e, t) => (n.findAllByClass(e, t), c !== void 0 && (i = c[0]), n), n.findLastByClass = (e, t) => (n.findAllByClass(e, t), c !== void 0 && (i = c[c.length - 1]), n), n.parent = () => i.parentNode, n.child = (e) => (n.find(e, i), n), n.children = (e) => (n.findAll(e, i), n), n.create = (e) => {
     let t = document.createElement("div");
-    return t.innerHTML = e.trim(), i = t.firstChild, n;
+    return t.innerHTML = e.trim(), t.firstChild;
   }, n.replace = (e) => {
     const t = n.create(e);
-    i.parentNode.replaceChild(t, i);
+    return i.parentNode.replaceChild(t, i), n;
   }, n.html = (e) => i == null ? "" : e === void 0 ? i.innerHTML : (i.innerHTML = e, n), n.id = (e) => e === void 0 ? i.id : (i.id = e, n), n.class = (e) => e === void 0 ? i.className : (i.className = e, n), n.val = (e) => {
     if (i == null)
       return "";
@@ -30,6 +30,7 @@ const o = function(w) {
         let d = i.options;
         for (let s in d)
           d[s].value === e && (i.selectedIndex = s);
+        return n;
       }
     } else if (i.value !== void 0) {
       if (t === "text" || t === "password" || t === "hidden" || t === "select-one")
@@ -41,43 +42,28 @@ const o = function(w) {
   }, n.getAttr = (e) => {
     if (i.getAttribute)
       return i.getAttribute(e);
-  }, n.setAttr = (e, t) => (i.setAttribute && i.setAttribute(e, t), n), n.attr = (e, t) => {
-    if (t === void 0)
-      return n.getAttr(e);
-    n.setAttr(e, t);
-  }, n.addClass = (e) => {
+  }, n.setAttr = (e, t) => (i.setAttribute && i.setAttribute(e, t), n), n.attr = (e, t) => t === void 0 ? n.getAttr(e) : (n.setAttr(e, t), n), n.addClass = (e) => {
     let t = n.getAttr("class");
-    n.setAttr("class", t + " " + e);
+    return n.setAttr("class", t + " " + e), n;
   }, n.removeClass = (e) => {
     let t = n.getAttr("class");
     if (t === "")
-      return;
+      return n;
     let d = t.split(" ");
     for (let s in d)
       d[s] === e && d.splice(s, 1);
-    n.setAttr("class", d.join(" "));
+    return n.setAttr("class", d.join(" ")), n;
   }, n.clear = (e) => {
     if (n.findObj(e), i === void 0)
-      return;
+      return n;
     const t = i.type;
-    if (t !== void 0) {
-      if (t === "checkbox")
-        return i.checked = "", n;
-      if (t === "select-one" || t === "select-multiple")
-        return i.selectedIndex = 0, n;
-      if (i.value !== void 0) {
-        if (t === "text" || t === "password" || t === "hidden" || t === "textarea" || t === "select-one")
-          return i.value = "", n;
-      } else if (i.innerHTML)
-        return i.innerHTML = "", n;
-    }
+    return t === void 0 || (t === "checkbox" ? i.checked = "" : t === "select-one" || t === "select-multiple" ? i.selectedIndex = 0 : i.value !== void 0 ? (t === "text" || t === "password" || t === "hidden" || t === "textarea" || t === "select-one") && (i.value = "") : i.innerHTML && (i.innerHTML = "")), n;
   }, n.clearForm = () => {
     const t = n.findObj(arguments[0]).childNodes;
     for (let d in t)
       n.clear(t[d]);
-  }, n.hide = (e) => {
-    n.findById(e), i.className = "hidden";
-  }, n.renderTemplate = (e, t) => {
+    return n;
+  }, n.hide = (e) => (n.findById(e), i.className = "hidden", n), n.renderTemplate = (e, t) => {
     let d = e.indexOf("{{"), s;
     for (; d !== -1; ) {
       s = e.indexOf("}}");
@@ -201,8 +187,8 @@ const o = function(w) {
           f--, h();
         }), o().findById(`on-next-year-${s}`).click(() => {
           f++, h();
-        }), N(B, l - 1), N(D, l), N(A, l + 1);
-      }, N = (r, a) => {
+        }), C(B, l - 1), C(D, l), C(A, l + 1);
+      }, C = (r, a) => {
         for (let p in r) {
           let y = r[p];
           o().findById(`datepicker-date-${s}${y}${a}`).click(() => {
@@ -220,8 +206,8 @@ const o = function(w) {
         const g = y.getDate(), k = g - a + 1;
         B = M(k, g), y.setDate(p + 1);
         const Y = 42 - p - (g - k) - 1;
-        A = M(1, Y), b = "", C(B, l - 1, "prev-month"), C(D, l, "curr-month"), C(A, l + 1, "next-month"), S(r);
-      }, C = (r, a, p) => {
+        A = M(1, Y), b = "", N(B, l - 1, "prev-month"), N(D, l, "curr-month"), N(A, l + 1, "next-month"), S(r);
+      }, N = (r, a, p) => {
         for (let y in r) {
           let g = "", k = r[y];
           k === _ && a === u && f === m && (g = " is-active"), b += `<li>

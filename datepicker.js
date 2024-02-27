@@ -20,13 +20,13 @@ const datepicker = data => {
     locale: 'en',
   };
 
-  const setOptions = data => {
+  const defaults = data => {
     for (const key in data) {
       options[key] = data[key];
     }
   }
-  setOptions(data || {});
-  setOptions(locale[options.locale]);
+  defaults(data || {});
+  defaults(locale[options.locale]);
 
   dom().ready(() => {
     dom()

@@ -3,7 +3,7 @@
   "name": "imnd-datepicker",
   "description": "datepicker",
   "main": "datepicker.js",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "imnd-ajax": "1.0.1",
-    "imnd-dom": "3.0.1"
+    "imnd-dom": "3.3.0"
   },
   "devDependencies": {
     "vite": "^4.4.5"

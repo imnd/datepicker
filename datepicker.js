@@ -255,10 +255,11 @@ const datepicker = data => {
         formatInputDate();
         buildDatepicker(datepickerInput);
       });
+
     // apply styles
-    let styleTag = document.createElement('style');
-    styleTag.innerHTML = styles;
-    document.getElementsByTagName('head')[0].appendChild(styleTag);
+    dom
+      .findByTag('head')
+      .appendChild(dom.createTag('style', styles));
   });
 };
 
